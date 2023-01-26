@@ -6,12 +6,11 @@
 /*   By: scosta-j <scosta-j@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/22 00:23:39 by scosta-j          #+#    #+#             */
-/*   Updated: 2023/01/23 20:00:50 by scosta-j         ###   ########.fr       */
+/*   Updated: 2023/01/26 23:23:39 by scosta-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
-#include "stdarg.h"
+#include "ft_printf.h"
 
 /**
  * dar cast a string para (char *) para podermos alterar
@@ -58,7 +57,7 @@ int	ft_printf(const char *a, ...)
 	while (*string)
 	{
 		if (*string != '%')
-			p += write(1, &string, 1);
+			p += write(1, string, 1);
 		else
 		{
 			string++;
@@ -79,8 +78,8 @@ int	ft_printf(const char *a, ...)
 */
 void	percent_operations(char c, va_list args, int *p)
 {
-	if (ft_strchr("cspdiuxX%", c))
-		print_arg(args, c, &p);
+	if (ft_strchr("cs pdiuxX%", c))
+		print_arg(args, c, p);
 	else
 	{
 		*p += write(1, "%", 1);
@@ -96,7 +95,10 @@ void	percent_operations(char c, va_list args, int *p)
 void	print_arg(va_list args, char type, int	*p)
 {
 	if (type == 'c') //ver se isto ta bem
-		*p += write(1, va_arg(args, char), 1);
+	{
+		char c = (char ) va_arg(args, int);
+		*p += write(1, &c, 1);
+	}
 	if (type == 's')
 		*p += print_string(args);
 	if (type == 'd' || type == 'i')
@@ -106,10 +108,7 @@ void	print_arg(va_list args, char type, int	*p)
 	if (type == 'x' || type == 'X')
 		*p += print_hexadecimal(args, type);
 	if (type == 'p')
-	{
-		*p += write (1, "0x", 2);
 		*p += print_pointer(args);
-	}
 	if (type == '%')
 		*p += write(1, "%", 1);
 }
@@ -119,7 +118,7 @@ int	print_string(va_list args)
 	char	*string;
 
 	string = va_arg(args, char *);
-	return (write(1, &string, strlen(string)));
+	return (write(1, string, strlen(string)));
 }
 
 int	print_signed_int(va_list args)
@@ -130,7 +129,7 @@ int	print_signed_int(va_list args)
 
 	number = va_arg(args, int);
 	num_str = ft_itoa(number);
-	len_aux = write(1, &num_str, ft_strlen(num_str));
+	len_aux = write(1, num_str, ft_strlen(num_str));
 	free(num_str);
 	return (len_aux);
 }
@@ -141,26 +140,28 @@ int	print_signed_int(va_list args)
 */
 int	print_unsigned(va_list args)
 {
-	unsigned	num;
-	int			size;
-	char		*string;
+	unsigned int	num;
+	unsigned int	aux;
+	int				size;
+	char			*string;
 
 	num = va_arg(args, unsigned int);
+	aux = num;
 	size = compute_size_u(num);
 	string = (char *) malloc(size +1);
 	string[size] = '\0';
 	while (size > 0)
 	{
-		string[size - 1] = num % 10;
+		string[size - 1] = num % 10 + '0';
 		num = num / 10;
 		size--;
 	}
-	size = write(1, string ,compute_size_u(num));
+	size = write(1, string, compute_size_u(aux));
 	free(string);
 	return (size);
 }
 
-static int	compute_size_u(unsigned n)
+int	compute_size_u(unsigned int n)
 {
 	int	i;
 
@@ -180,18 +181,27 @@ static int	compute_size_u(unsigned n)
 */
 int	print_hexadecimal(va_list args, char type)
 {
-	char	*base;
-	int		num;
+	char				*base;
+	int					num;
+	int					signal;
 
-	num = va_arg(args, unsigned int);
+	signal = 0;
+	num = va_arg(args, int);
+	if (num < 0)
+		signal = 1;
 	if (type == 'x')
 		base = "0123456789abcdef";
 	else
 		base = "0123456789ABCDEF";
-	return (turning_hexa(num, base));
+	if (signal)
+	{
+		write (1, "-", 1);
+		num = num * -1;
+	}
+	return (turning_hexa((unsigned long long int) num, base) + signal);
 }
 
-static int	compute_size_hex(int n)
+int	compute_size_hex(unsigned long long int n)
 {
 	int	size;
 
@@ -207,12 +217,14 @@ static int	compute_size_hex(int n)
 /*
  * turns into hexadecimal and prints
  */
-int turning_hexa(int a ,char* base)
+int turning_hexa(unsigned long long int a, char *base)
 {
-	int		size;
-	char	*hexa_s;
+	int						size;
+	unsigned long long int	aux;
+	char					*hexa_s;
 
-	size = compute_size(a);
+	size = compute_size_hex(a);
+	aux = a;
 	hexa_s = (char *) malloc(size + 1);
 	hexa_s[size] = '\0';
 	while (size > 0)
@@ -221,7 +233,7 @@ int turning_hexa(int a ,char* base)
 		a = a / 16;
 		size--;
 	}
-	size = write(1, &hexa_s, compute_size(a));
+	size = write(1, hexa_s, compute_size_hex(aux));
 	free(hexa_s);
 	return (size);
 }
@@ -232,11 +244,9 @@ int turning_hexa(int a ,char* base)
 */
 int	print_pointer(va_list args)
 {
-	int						size_print;
 	unsigned long long		hex;
 
-	hex = va_arg(args, unsigned long long);
-	size_print = compute_size_hex(hex);
+	hex = va_arg(args, unsigned long long int);
 	write (1, "0x", 2);
 	return (2 + turning_hexa(hex, "0123456789abcdef"));
 }
