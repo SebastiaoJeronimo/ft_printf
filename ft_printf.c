@@ -6,7 +6,7 @@
 /*   By: scosta-j <scosta-j@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/22 00:23:39 by scosta-j          #+#    #+#             */
-/*   Updated: 2023/01/27 22:34:12 by scosta-j         ###   ########.fr       */
+/*   Updated: 2023/01/27 22:44:01 by scosta-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,15 +116,17 @@ int	print_string(va_list args)
 
 int	print_signed_int(va_list args)
 {
-	char		*num_str;
-	long long	number;
-	int			len_aux;
+	long		number;
+	int			signal;
 
+	signal = 0;
 	number = va_arg(args, int);
-	num_str = ft_itoa(number);
-	len_aux = write(1, num_str, ft_strlen(num_str));
-	free(num_str);
-	return (len_aux);
+	if (number < 0)
+	{
+		signal = write (1, "-", 1);
+		number = number * -1;
+	}
+	return (turning_to_base(number, "0123456789", 10) + signal);
 }
 
 /**

@@ -6,7 +6,7 @@
 /*   By: scosta-j <scosta-j@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/27 21:47:47 by scosta-j          #+#    #+#             */
-/*   Updated: 2023/01/27 22:02:13 by scosta-j         ###   ########.fr       */
+/*   Updated: 2023/01/27 22:45:22 by scosta-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,20 +29,20 @@ int	print_pointer(va_list args)
 /*
  * turns into hexadecimal and prints
  */
-int	turning_to_base(unsigned long int a, char *base, int base_len)
+int	turning_to_base(unsigned long int number, char *base, int base_len)
 {
 	int						size;
 	unsigned long long int	aux;
 	char					*hexa_s;
 
-	size = compute_size(a, base_len);
-	aux = a;
+	size = compute_size(number, base_len);
+	aux = number;
 	hexa_s = (char *) malloc(size + 1);
 	hexa_s[size] = '\0';
 	while (size > 0)
 	{
-		hexa_s[size - 1] = base[a % base_len];
-		a = a / base_len;
+		hexa_s[size - 1] = base[number % base_len];
+		number = number / base_len;
 		size--;
 	}
 	size = write(1, hexa_s, compute_size(aux, base_len));
