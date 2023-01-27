@@ -6,7 +6,7 @@
 /*   By: scosta-j <scosta-j@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/26 19:05:51 by scosta-j          #+#    #+#             */
-/*   Updated: 2023/01/27 18:26:32 by scosta-j         ###   ########.fr       */
+/*   Updated: 2023/01/27 21:58:08 by scosta-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,10 +22,9 @@ void	print_arg(va_list args, char type, int	*p);
 int		print_string(va_list args);
 int		print_signed_int(va_list args);
 int		print_unsigned(va_list args);
-int		compute_size_u(unsigned int n);
 int		print_hexadecimal(va_list args, char type);
-int		compute_size_hex(unsigned long long int n);
-int		turning_hexa(unsigned long int a, char *base);
+int		compute_size(unsigned long long int n, int base);
+int		turning_to_base(unsigned long int a, char *base, int base_len);
 int		print_pointer(va_list args);
 
 #endif

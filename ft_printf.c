@@ -6,7 +6,7 @@
 /*   By: scosta-j <scosta-j@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/22 00:23:39 by scosta-j          #+#    #+#             */
-/*   Updated: 2023/01/27 20:15:27 by scosta-j         ###   ########.fr       */
+/*   Updated: 2023/01/27 22:34:12 by scosta-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,30 +61,15 @@ int	ft_printf(const char *a, ...)
 		else
 		{
 			string++;
-			percent_operations(*string, args, &p);
+			if (ft_strchr("cspdiuxX%", *string))
+				print_arg(args, *string, &p);
+			else
+				p += (write(1, "%", 1) + write(1, string, 1));
 		}
 		string++;
 	}
 	va_end(args);
 	return (p);
-}
-
-/**
- * TODO check if after % its over
- *
- * checks if its one of the cases covered in ft_printf
- * if it is then prints the arg value
- * if its not then prints the percent then the caracter
-*/
-void	percent_operations(char c, va_list args, int *p)
-{
-	if (ft_strchr("cspdiuxX%", c))
-		print_arg(args, c, p);
-	else
-	{
-		*p += write(1, "%", 1);
-		*p += write(1, &c, 1);
-	}
 }
 
 /**
@@ -94,7 +79,8 @@ void	percent_operations(char c, va_list args, int *p)
 */
 void	print_arg(va_list args, char type, int	*p)
 {
-	char	c;
+	char			c;
+	unsigned int	u;
 
 	if (type == 'c')
 	{
@@ -106,7 +92,10 @@ void	print_arg(va_list args, char type, int	*p)
 	if (type == 'd' || type == 'i')
 		*p += print_signed_int(args);
 	if (type == 'u')
-		*p += print_unsigned(args);
+	{
+		u = va_arg(args, unsigned int);
+		*p += turning_to_base(u, "0123456789", 10);
+	}
 	if (type == 'x' || type == 'X')
 		*p += print_hexadecimal(args, type);
 	if (type == 'p')
@@ -139,49 +128,6 @@ int	print_signed_int(va_list args)
 }
 
 /**
- * Acabar unisigned
- * recursiva provavelmente
-*/
-int	print_unsigned(va_list args)
-{
-	unsigned int	num;
-	unsigned int	aux;
-	int				size;
-	char			*string;
-
-	num = va_arg(args, unsigned int);
-	aux = num;
-	size = compute_size_u(num);
-	string = (char *) malloc(size +1);
-	string[size] = '\0';
-	while (size > 0)
-	{
-		string[size - 1] = num % 10 + '0';
-		num = num / 10;
-		size--;
-	}
-	size = write(1, string, compute_size_u(aux));
-	free(string);
-	return (size);
-}
-
-/**
- * computes the size for an unsigned number
-*/
-int	compute_size_u(unsigned int n)
-{
-	int	i;
-
-	i = 0;
-	while (n > 9)
-	{
-		n = n / 10;
-		i++;
-	}
-	return (i + 1);
-}
-
-/**
  * recebe um unsigned atraves de va_list args
  * acabar hexadecimal
  * ver como e que numeros hexadecimais sao imprimidos
@@ -196,58 +142,9 @@ int	print_hexadecimal(va_list args, char type)
 		base = "0123456789abcdef";
 	else
 		base = "0123456789ABCDEF";
-	return (turning_hexa(num, base));
+	return (turning_to_base(num, base, 16));
 }
 
-int	compute_size_hex(unsigned long long int n)
-{
-	int	size;
 
-	size = 0;
-	while (n > 15)
-	{
-	size++;
-	n = n / 16;
-	}
-	return (size + 1);
-}
 
-/*
- * turns into hexadecimal and prints
- */
-int	turning_hexa(unsigned long int a, char *base)
-{
-	int						size;
-	unsigned long long int	aux;
-	char					*hexa_s;
-
-	size = compute_size_hex(a);
-	aux = a;
-	hexa_s = (char *) malloc(size + 1);
-	hexa_s[size] = '\0';
-	while (size > 0)
-	{
-		hexa_s[size - 1] = base[a % 16];
-		a = a / 16;
-		size--;
-	}
-	size = write(1, hexa_s, compute_size_hex(aux));
-	free(hexa_s);
-	return (size);
-}
-
-/**
- * acabar pointer 
- * ver como e que pointers sao imprimidos
-*/
-int	print_pointer(va_list args)
-{
-	unsigned long long		hex;
-
-	hex = va_arg(args, unsigned long long int);
-	if (!hex)
-		return (write (1, "(nil)", 5));
-	write (1, "0x", 2);
-	return (2 + turning_hexa(hex, "0123456789abcdef"));
-}
 

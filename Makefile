@@ -6,7 +6,7 @@
 #    By: scosta-j <scosta-j@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/01/26 18:30:32 by scosta-j          #+#    #+#              #
-#    Updated: 2023/01/26 20:49:41 by scosta-j         ###   ########.fr        #
+#    Updated: 2023/01/27 21:47:31 by scosta-j         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,7 +22,7 @@ CFLAGS	=	-Wall -Werror -Wextra
 
 RM	=	rm -f
 
-SRC	=	ft_printf.c
+SRC	=	ft_printf.c ft_printf_aux.c
 
 OBJ	=	$(SRC:.c=.o)
 
