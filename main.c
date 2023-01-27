@@ -18,7 +18,7 @@ int	main ()
 	p = &i;
 	d = 69;
 	i = 69;
-	u = -50;
+	u = 50;
 	x = 420;
 	len1 = 0;
 	len2 = 0;
@@ -29,13 +29,6 @@ int	main ()
 	len1 = printf("Test string\n");
 	len2 = ft_printf("Test string\n");
 	printf("Printed Characters with printf: %i\n", len1);
-	if (len1 != len2)
-		printf("\033[0;31m");
-	printf("Printed Characters with ft_printf: %i\n", len2);
-	if (len1 != len2)
-		printf("\033[0;37m");
-	printf("\n");
-	/* Character */
 	printf("\033[1;37m");
 	printf("Character\n");
 	printf("\033[0;37m");
@@ -167,7 +160,32 @@ int	main ()
 	printf("\n");
 	/* Text and format (String) */
 	printf("\033[1;37m");
-	printf("Text and format (String)\n");
+	printf("Text and format (String)\n");/* Text and format (Hexadecimal lowercase) */
+	printf("\033[1;37m");
+	printf("Text and format (Hexadecimal lowercase)\n");
+	printf("\033[0;37m");
+	len1 = printf("Test, %x\n", x);
+	len2 = ft_printf("Test, %x\n", x);
+	printf("Printed Characters with printf: %i\n", len1);
+	if (len1 != len2)
+		printf("\033[0;31m");
+	printf("Printed Characters with ft_printf: %i\n", len2);
+	if (len1 != len2)
+		printf("\033[0;37m");
+	printf("\n");
+	/* Text and format (Hexadecimal uppercase) */
+	printf("\033[1;37m");
+	printf("Text and format (Hexadecimal uppercase)\n");
+	printf("\033[0;37m");
+	len1 = printf("Test, %X\n", x);
+	len2 = ft_printf("Test, %X\n", x);
+	printf("Printed Characters with printf: %i\n", len1);
+	if (len1 != len2)
+		printf("\033[0;31m");
+	printf("Printed Characters with ft_printf: %i\n", len2);
+	if (len1 != len2)
+		printf("\033[0;37m");
+	printf("\n");
 	printf("\033[0;37m");
 	len1 = printf("Test, %s\n", s);
 	len2 = ft_printf("Test, %s\n", s);
@@ -269,4 +287,5 @@ int	main ()
 	if (len1 != len2)
 		printf("\033[0;37m");
 	printf("\n");
+
 }

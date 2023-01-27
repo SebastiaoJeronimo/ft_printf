@@ -6,7 +6,7 @@
 /*   By: scosta-j <scosta-j@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/22 00:23:39 by scosta-j          #+#    #+#             */
-/*   Updated: 2023/01/26 23:23:39 by scosta-j         ###   ########.fr       */
+/*   Updated: 2023/01/27 20:15:27 by scosta-j         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ int	ft_printf(const char *a, ...)
 */
 void	percent_operations(char c, va_list args, int *p)
 {
-	if (ft_strchr("cs pdiuxX%", c))
+	if (ft_strchr("cspdiuxX%", c))
 		print_arg(args, c, p);
 	else
 	{
@@ -94,9 +94,11 @@ void	percent_operations(char c, va_list args, int *p)
 */
 void	print_arg(va_list args, char type, int	*p)
 {
-	if (type == 'c') //ver se isto ta bem
+	char	c;
+
+	if (type == 'c')
 	{
-		char c = (char ) va_arg(args, int);
+		c = (char ) va_arg(args, int);
 		*p += write(1, &c, 1);
 	}
 	if (type == 's')
@@ -118,14 +120,16 @@ int	print_string(va_list args)
 	char	*string;
 
 	string = va_arg(args, char *);
+	if (!string)
+		return (write(1, "(null)", 6));
 	return (write(1, string, strlen(string)));
 }
 
 int	print_signed_int(va_list args)
 {
-	char	*num_str;
-	int		number;
-	int		len_aux;
+	char		*num_str;
+	long long	number;
+	int			len_aux;
 
 	number = va_arg(args, int);
 	num_str = ft_itoa(number);
@@ -161,6 +165,9 @@ int	print_unsigned(va_list args)
 	return (size);
 }
 
+/**
+ * computes the size for an unsigned number
+*/
 int	compute_size_u(unsigned int n)
 {
 	int	i;
@@ -182,23 +189,14 @@ int	compute_size_u(unsigned int n)
 int	print_hexadecimal(va_list args, char type)
 {
 	char				*base;
-	int					num;
-	int					signal;
+	unsigned int		num;
 
-	signal = 0;
-	num = va_arg(args, int);
-	if (num < 0)
-		signal = 1;
+	num = va_arg(args, unsigned int);
 	if (type == 'x')
 		base = "0123456789abcdef";
 	else
 		base = "0123456789ABCDEF";
-	if (signal)
-	{
-		write (1, "-", 1);
-		num = num * -1;
-	}
-	return (turning_hexa((unsigned long long int) num, base) + signal);
+	return (turning_hexa(num, base));
 }
 
 int	compute_size_hex(unsigned long long int n)
@@ -217,7 +215,7 @@ int	compute_size_hex(unsigned long long int n)
 /*
  * turns into hexadecimal and prints
  */
-int turning_hexa(unsigned long long int a, char *base)
+int	turning_hexa(unsigned long int a, char *base)
 {
 	int						size;
 	unsigned long long int	aux;
@@ -247,6 +245,9 @@ int	print_pointer(va_list args)
 	unsigned long long		hex;
 
 	hex = va_arg(args, unsigned long long int);
+	if (!hex)
+		return (write (1, "(nil)", 5));
 	write (1, "0x", 2);
 	return (2 + turning_hexa(hex, "0123456789abcdef"));
 }
+
