@@ -1,2 +1,2 @@
 # ft_printf
-my own implementation of the printf_f function
+my own implementation of the printf function
